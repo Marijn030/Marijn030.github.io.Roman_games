@@ -1,7 +1,9 @@
 body {
   display: flex;
   justify-content: center;
-  margin-top: 40px;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
   background: #eee;
 }
 
@@ -14,6 +16,20 @@ body {
 #board {
   width: 100%;
   display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#pieces {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
 }
 
 .piece {
@@ -22,13 +38,9 @@ body {
   height: 40px;
   cursor: pointer;
   transition: 0.2s;
+  z-index: 3;
 }
 
-.selected {
-  transform: scale(1.2);
-}
-
-/* DEBUG klikpunten */
 .dot {
   position: absolute;
   width: 22px;
@@ -36,4 +48,5 @@ body {
   background: rgba(255,0,0,0.3);
   border-radius: 50%;
   cursor: pointer;
+  z-index: 2;
 }

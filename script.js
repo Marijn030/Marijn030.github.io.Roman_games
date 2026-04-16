@@ -1,16 +1,16 @@
 const positions = [
-  {x: 0.5, y: 0.12}, // 0
-  {x: 0.78, y: 0.28}, // 1
-  {x: 0.88, y: 0.5}, // 2
-  {x: 0.78, y: 0.72}, // 3
-  {x: 0.5, y: 0.88}, // 4
-  {x: 0.22, y: 0.72}, // 5
-  {x: 0.12, y: 0.5}, // 6
-  {x: 0.22, y: 0.28}, // 7
-  {x: 0.5, y: 0.5}   // midden
+  {x: 0.5, y: 0.10}, // 0 top
+  {x: 0.78, y: 0.28}, // 1 top-right
+  {x: 0.90, y: 0.50}, // 2 right
+  {x: 0.78, y: 0.72}, // 3 bottom-right
+  {x: 0.5, y: 0.90}, // 4 bottom
+  {x: 0.22, y: 0.72}, // 5 bottom-left
+  {x: 0.10, y: 0.50}, // 6 left
+  {x: 0.22, y: 0.28}, // 7 top-left
+  {x: 0.5, y: 0.5}   // 8 center
 ];
 
-// verbindingen (BELANGRIJK voor regels)
+// connections between nodes
 const connections = {
   0: [1,7,8],
   1: [0,2,8],
@@ -50,8 +50,10 @@ function getPixelPos(index) {
 
 function updatePiece(el, index) {
   const p = getPixelPos(index);
-  el.style.left = (p.x - 20) + "px";
-  el.style.top = (p.y - 20) + "px";
+  const size = 40;
+
+  el.style.left = (p.x - size / 2) + "px";
+  el.style.top = (p.y - size / 2) + "px";
 }
 
 // ---- game logic ----
@@ -61,36 +63,35 @@ function checkWin(player) {
   );
 }
 
-function hasMove(index) {
-  return connections[index].some(n => board[n] === null);
-}
-
 // ---- pieces ----
 function createPiece(player, index) {
   const el = document.createElement("img");
   el.src = player === 1 ? "stone1.png" : "stone2.png";
   el.classList.add("piece");
 
+  el.dataset.index = index;
+  el.dataset.player = player;
+
   updatePiece(el, index);
 
   el.onclick = () => {
+    // only after placing phase
     if (placed[1] < 3 || placed[2] < 3) return;
     if (player !== currentPlayer) return;
-    if (!hasMove(index)) return; // ingesloten
 
     document.querySelectorAll(".piece").forEach(p => p.classList.remove("selected"));
     el.classList.add("selected");
 
-    selected = {el, from:index};
+    selected = {el, from: index};
   };
 
   piecesContainer.appendChild(el);
 }
 
-// ---- clicks ----
+// ---- main click handler ----
 function onClick(index) {
 
-  // fase 1: plaatsen
+  // PHASE 1: placing
   if (placed[currentPlayer] < 3) {
     if (board[index] !== null) return;
 
@@ -99,29 +100,32 @@ function onClick(index) {
     placed[currentPlayer]++;
 
     if (checkWin(currentPlayer)) {
-      setTimeout(()=>alert("Speler " + currentPlayer + " wint!"),100);
+      setTimeout(() => alert("Player " + currentPlayer + " wins!"), 100);
       return;
     }
 
     currentPlayer = 3 - currentPlayer;
   }
 
-  // fase 2: bewegen
+  // PHASE 2: moving
   else if (selected) {
     if (board[index] !== null) return;
 
-    // alleen verbonden
+    // must be connected
     if (!connections[selected.from].includes(index)) return;
 
+    // move piece
     board[selected.from] = null;
     board[index] = currentPlayer;
 
     updatePiece(selected.el, index);
+    selected.el.dataset.index = index;
+
     selected.el.classList.remove("selected");
     selected = null;
 
     if (checkWin(currentPlayer)) {
-      setTimeout(()=>alert("Speler " + currentPlayer + " wint!"),100);
+      setTimeout(() => alert("Player " + currentPlayer + " wins!"), 100);
       return;
     }
 
@@ -154,8 +158,9 @@ window.onload = () => {
 
 window.onresize = () => {
   createDots();
-  document.querySelectorAll(".piece").forEach((el, i) => {
-    const index = board.findIndex((v, idx) => v && el === piecesContainer.children[idx]);
-    if (index !== -1) updatePiece(el, index);
+
+  document.querySelectorAll(".piece").forEach(el => {
+    const index = parseInt(el.dataset.index);
+    updatePiece(el, index);
   });
 };
