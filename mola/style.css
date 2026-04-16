@@ -371,7 +371,7 @@ body {
 
   .piece[data-player="2"] {
     filter:
-      brightness(0.62)
+      brightness(0.4)
       drop-shadow(0 5px 8px rgba(0,0,0,0.75));
   }
 
@@ -384,7 +384,7 @@ body {
 
   .piece[data-player="2"].selected {
     filter:
-      brightness(0.62)
+      brightness(0.4)
       drop-shadow(0 0 0.35rem rgba(255, 240, 180, 0.85))
       drop-shadow(0 8px 14px rgba(0,0,0,0.75));
   }
@@ -398,7 +398,7 @@ body {
 
   .piece[data-player="2"].removable {
     filter:
-      brightness(0.62)
+      brightness(0.4)
       drop-shadow(0 0 0.5rem rgba(255, 110, 110, 0.95))
       drop-shadow(0 8px 14px rgba(0,0,0,0.75));
   }

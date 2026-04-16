@@ -315,7 +315,7 @@ body {
 
   .piece[data-player="2"] {
     filter:
-      brightness(0.25)
+      brightness(0.4)
       contrast(1.4)
       drop-shadow(0 6px 10px rgba(0,0,0,0.7));
   }
@@ -330,7 +330,7 @@ body {
 
   .piece[data-player="2"].selected {
     filter:
-      brightness(0.25)
+      brightness(0.4)
       contrast(1.4)
       drop-shadow(0 0 0.35rem rgba(255, 240, 180, 0.85))
       drop-shadow(0 8px 14px rgba(0,0,0,0.7));
