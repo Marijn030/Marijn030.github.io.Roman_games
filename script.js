@@ -1,13 +1,13 @@
 const positions = [
-  {x: 0.5, y: 0.10}, // 0 top
-  {x: 0.78, y: 0.28}, // 1 top-right
-  {x: 0.90, y: 0.50}, // 2 right
-  {x: 0.78, y: 0.72}, // 3 bottom-right
-  {x: 0.5, y: 0.90}, // 4 bottom
-  {x: 0.22, y: 0.72}, // 5 bottom-left
-  {x: 0.10, y: 0.50}, // 6 left
-  {x: 0.22, y: 0.28}, // 7 top-left
-  {x: 0.5, y: 0.5}   // 8 center
+  { x: 0.4046, y: 0.1895 }, // 0 top
+  { x: 0.6677, y: 0.2143 }, // 1 top-right
+  { x: 0.8032, y: 0.3674 }, // 2 right
+  { x: 0.8244, y: 0.6340 }, // 3 bottom-right
+  { x: 0.6206, y: 0.8714 }, // 4 bottom
+  { x: 0.3079, y: 0.8297 }, // 5 bottom-left
+  { x: 0.1831, y: 0.5822 }, // 6 left
+  { x: 0.2310, y: 0.3433 }, // 7 top-left (NOW EXACT)
+  { x: 0.5119, y: 0.5003 }  // 8 center
 ];
 
 // connections between nodes
