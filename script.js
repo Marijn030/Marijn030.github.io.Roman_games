@@ -1,97 +1,131 @@
-const positions = [
-  { x: 0.4046, y: 0.1895 }, // 0 top
-  { x: 0.6677, y: 0.2143 }, // 1 top-right
-  { x: 0.8032, y: 0.3674 }, // 2 right
-  { x: 0.8244, y: 0.6340 }, // 3 bottom-right
-  { x: 0.6206, y: 0.8714 }, // 4 bottom
-  { x: 0.3079, y: 0.8297 }, // 5 bottom-left
-  { x: 0.1831, y: 0.5822 }, // 6 left
-  { x: 0.2310, y: 0.3433 }, // 7 top-left (NOW EXACT)
-  { x: 0.5119, y: 0.5003 }  // 8 center
+const BOARD_WIDTH = 4032;
+const BOARD_HEIGHT = 3024;
+
+// Exact circles from your image map.
+// Order is important and matches the connection graph below.
+const nodes = [
+  { x: 1633, y: 581,  r: 138 }, // 0 top
+  { x: 2705, y: 648,  r: 132 }, // 1 top-right
+  { x: 3251, y: 1110, r: 131 }, // 2 right
+  { x: 3325, y: 1923, r: 130 }, // 3 bottom-right
+  { x: 2506, y: 2636, r: 135 }, // 4 bottom
+  { x: 1263, y: 2508, r: 139 }, // 5 bottom-left
+  { x: 732,  y: 1752, r: 132 }, // 6 left
+  { x: 935,  y: 1040, r: 132 }, // 7 top-left
+  { x: 2064, y: 1519, r: 132 }  // 8 center
 ];
 
-// connections between nodes
 const connections = {
-  0: [1,7,8],
-  1: [0,2,8],
-  2: [1,3,8],
-  3: [2,4,8],
-  4: [3,5,8],
-  5: [4,6,8],
-  6: [5,7,8],
-  7: [6,0,8],
-  8: [0,1,2,3,4,5,6,7]
+  0: [1, 7, 8],
+  1: [0, 2, 8],
+  2: [1, 3, 8],
+  3: [2, 4, 8],
+  4: [3, 5, 8],
+  5: [4, 6, 8],
+  6: [5, 7, 8],
+  7: [6, 0, 8],
+  8: [0, 1, 2, 3, 4, 5, 6, 7]
 };
 
 const winningLines = [
-  [0,8,4],
-  [1,8,5],
-  [2,8,6],
-  [3,8,7]
+  [0, 8, 4],
+  [1, 8, 5],
+  [2, 8, 6],
+  [3, 8, 7]
 ];
 
 let board = Array(9).fill(null);
 let currentPlayer = 1;
-let placed = {1:0, 2:0};
+let placed = { 1: 0, 2: 0 };
 let selected = null;
 
 const game = document.getElementById("game");
-const piecesContainer = document.getElementById("pieces");
 const boardImg = document.getElementById("board");
+const holesContainer = document.getElementById("holes");
+const piecesContainer = document.getElementById("pieces");
 
-// ---- helpers ----
-function getPixelPos(index) {
-  const rect = boardImg.getBoundingClientRect();
+function scaleX(x) {
+  return (x / BOARD_WIDTH) * game.clientWidth;
+}
+
+function scaleY(y) {
+  return (y / BOARD_HEIGHT) * game.clientHeight;
+}
+
+function scaleR(r) {
+  const sx = game.clientWidth / BOARD_WIDTH;
+  const sy = game.clientHeight / BOARD_HEIGHT;
+  return r * Math.min(sx, sy);
+}
+
+function getNodePixel(index) {
+  const n = nodes[index];
   return {
-    x: positions[index].x * rect.width,
-    y: positions[index].y * rect.height
+    x: scaleX(n.x),
+    y: scaleY(n.y)
   };
 }
 
-function updatePiece(el, index) {
-  const p = getPixelPos(index);
-  const size = 40;
-
-  el.style.left = (p.x - size / 2) + "px";
-  el.style.top = (p.y - size / 2) + "px";
+function updatePiecePosition(pieceEl, index) {
+  const p = getNodePixel(index);
+  pieceEl.style.left = `${p.x}px`;
+  pieceEl.style.top = `${p.y}px`;
+  pieceEl.dataset.index = String(index);
 }
 
-// ---- game logic ----
 function checkWin(player) {
-  return winningLines.some(line =>
-    line.every(i => board[i] === player)
-  );
+  return winningLines.some(line => line.every(i => board[i] === player));
 }
 
-// ---- pieces ----
+function clearSelection() {
+  document.querySelectorAll(".piece.selected").forEach(el => {
+    el.classList.remove("selected");
+  });
+  selected = null;
+}
+
+function switchPlayer() {
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
+}
+
+function refreshHoles() {
+  document.querySelectorAll(".hole").forEach((holeEl, index) => {
+    if (board[index] !== null) {
+      holeEl.classList.add("occupied");
+    } else {
+      holeEl.classList.remove("occupied");
+    }
+  });
+}
+
 function createPiece(player, index) {
   const el = document.createElement("img");
   el.src = player === 1 ? "stone1.png" : "stone2.png";
-  el.classList.add("piece");
+  el.className = "piece";
+  el.dataset.player = String(player);
+  el.draggable = false;
 
-  el.dataset.index = index;
-  el.dataset.player = player;
+  updatePiecePosition(el, index);
 
-  updatePiece(el, index);
+  el.addEventListener("click", (event) => {
+    event.stopPropagation();
 
-  el.onclick = () => {
-    // only after placing phase
     if (placed[1] < 3 || placed[2] < 3) return;
     if (player !== currentPlayer) return;
 
-    document.querySelectorAll(".piece").forEach(p => p.classList.remove("selected"));
+    clearSelection();
     el.classList.add("selected");
-
-    selected = {el, from: index};
-  };
+    selected = {
+      el,
+      from: Number(el.dataset.index)
+    };
+  });
 
   piecesContainer.appendChild(el);
 }
 
-// ---- main click handler ----
-function onClick(index) {
-
-  // PHASE 1: placing
+function handleHoleClick(index) {
+  // Phase 1: placing
   if (placed[currentPlayer] < 3) {
     if (board[index] !== null) return;
 
@@ -99,68 +133,74 @@ function onClick(index) {
     createPiece(currentPlayer, index);
     placed[currentPlayer]++;
 
+    refreshHoles();
+
     if (checkWin(currentPlayer)) {
-      setTimeout(() => alert("Player " + currentPlayer + " wins!"), 100);
+      setTimeout(() => alert(`Player ${currentPlayer} wins!`), 50);
       return;
     }
 
-    currentPlayer = 3 - currentPlayer;
+    switchPlayer();
+    return;
   }
 
-  // PHASE 2: moving
-  else if (selected) {
-    if (board[index] !== null) return;
+  // Phase 2: moving
+  if (!selected) return;
+  if (board[index] !== null) return;
+  if (!connections[selected.from].includes(index)) return;
 
-    // must be connected
-    if (!connections[selected.from].includes(index)) return;
+  board[selected.from] = null;
+  board[index] = currentPlayer;
 
-    // move piece
-    board[selected.from] = null;
-    board[index] = currentPlayer;
+  updatePiecePosition(selected.el, index);
+  selected.el.classList.remove("selected");
+  selected = null;
 
-    updatePiece(selected.el, index);
-    selected.el.dataset.index = index;
+  refreshHoles();
 
-    selected.el.classList.remove("selected");
-    selected = null;
-
-    if (checkWin(currentPlayer)) {
-      setTimeout(() => alert("Player " + currentPlayer + " wins!"), 100);
-      return;
-    }
-
-    currentPlayer = 3 - currentPlayer;
+  if (checkWin(currentPlayer)) {
+    setTimeout(() => alert(`Player ${currentPlayer} wins!`), 50);
+    return;
   }
+
+  switchPlayer();
 }
 
-// ---- clickable dots ----
-function createDots() {
-  document.querySelectorAll(".dot").forEach(e => e.remove());
+function createHoles() {
+  holesContainer.innerHTML = "";
 
-  positions.forEach((pos, index) => {
-    const d = document.createElement("div");
-    d.classList.add("dot");
+  nodes.forEach((node, index) => {
+    const hole = document.createElement("div");
+    const x = scaleX(node.x);
+    const y = scaleY(node.y);
+    const r = scaleR(node.r);
 
-    const p = getPixelPos(index);
-    d.style.left = (p.x - 11) + "px";
-    d.style.top = (p.y - 11) + "px";
+    hole.className = "hole";
+    hole.style.left = `${x}px`;
+    hole.style.top = `${y}px`;
+    hole.style.width = `${r * 2}px`;
+    hole.style.height = `${r * 2}px`;
 
-    d.onclick = () => onClick(index);
+    hole.addEventListener("click", () => handleHoleClick(index));
 
-    game.appendChild(d);
+    holesContainer.appendChild(hole);
+  });
+
+  refreshHoles();
+}
+
+function repositionPieces() {
+  document.querySelectorAll(".piece").forEach(pieceEl => {
+    const index = Number(pieceEl.dataset.index);
+    updatePiecePosition(pieceEl, index);
   });
 }
 
-// ---- init ----
-window.onload = () => {
-  createDots();
-};
+window.addEventListener("load", () => {
+  createHoles();
+});
 
-window.onresize = () => {
-  createDots();
-
-  document.querySelectorAll(".piece").forEach(el => {
-    const index = parseInt(el.dataset.index);
-    updatePiece(el, index);
-  });
-};
+window.addEventListener("resize", () => {
+  createHoles();
+  repositionPieces();
+});

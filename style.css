@@ -1,50 +1,67 @@
 body {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start;
   margin: 0;
+  padding-top: 40px;
   background: #eee;
+  font-family: sans-serif;
 }
 
 #game {
   position: relative;
   width: 500px;
-  height: 500px;
+  aspect-ratio: 4032 / 3024;
 }
 
 #board {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  display: block;
   pointer-events: none;
   z-index: 1;
 }
 
+#holes {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
 #pieces {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 3;
+}
+
+.hole {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.28);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.hole.occupied {
+  pointer-events: none;
+  opacity: 0;
 }
 
 .piece {
   position: absolute;
   width: 40px;
   height: 40px;
+  transform: translate(-50%, -50%);
   cursor: pointer;
   z-index: 3;
+  transition: transform 0.15s ease;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.dot {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background: rgba(255,0,0,0.3);
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 2;
+.piece.selected {
+  transform: translate(-50%, -50%) scale(1.18);
 }
