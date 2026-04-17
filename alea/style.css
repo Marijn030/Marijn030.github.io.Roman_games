@@ -233,10 +233,10 @@ body {
 .dice-tray {
   position: absolute;
   left: 50%;
-  bottom: 5%;
+  bottom: 4%;
   transform: translateX(-50%);
   width: 82%;
-  height: 28%;
+  height: 38%;
   z-index: 4;
 }
 
@@ -358,12 +358,12 @@ body {
 
   .dice-tray {
     width: 88%;
-    top: 54%;
-    height: 40%;
+    top: 50%;
+    height: 42%;
   }
 
   .die-slot {
-    width: 18%;
+    width: 17%;
   }
 
   .result-die {

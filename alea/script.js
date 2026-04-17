@@ -57,29 +57,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const isPhone = window.innerWidth <= 640;
 
     const placed = [];
+    const minDistance = isPhone ? 20 : 15;
 
-    // how far dice must be apart (bigger on phone)
-    const minDistance = isPhone ? 18 : 14;
+    const bounds = isPhone
+        ? { leftMin: 18, leftMax: 82, bottomMin: 8, bottomMax: 42 }
+        : { leftMin: 18, leftMax: 78, bottomMin: 10, bottomMax: 30 };
 
-    dieSlots.forEach((slot, index) => {
+    dieSlots.forEach((slot) => {
         let tries = 0;
         let pos;
 
         do {
         pos = {
-            left: randomInt(20, 80),
-            bottom: isPhone
-            ? randomInt(12, 32)   // more vertical space on phone
-            : randomInt(10, 26)
+            left: randomInt(bounds.leftMin, bounds.leftMax),
+            bottom: randomInt(bounds.bottomMin, bounds.bottomMax)
         };
-
         tries++;
-
-        // stop infinite loop just in case
-        if (tries > 50) break;
-
+        if (tries > 80) break;
         } while (
-        placed.some(p => {
+        placed.some((p) => {
             const dx = p.left - pos.left;
             const dy = p.bottom - pos.bottom;
             return Math.sqrt(dx * dx + dy * dy) < minDistance;
@@ -89,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         placed.push(pos);
 
         const img = slot.querySelector('.result-die');
-
         const rot = randomInt(-18, 18);
 
         slot.style.left = `${pos.left}%`;
