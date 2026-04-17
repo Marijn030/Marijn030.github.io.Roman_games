@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     !dieTrigger ||
     !resultSummary ||
     !totalValue ||
-    dieSlots.length === 0
+    dieSlots.length !== 5
   ) {
     console.error('Missing required dice game elements.');
     return;
@@ -46,38 +46,38 @@ document.addEventListener('DOMContentLoaded', () => {
     dieSlots.forEach((slot, index) => {
       const img = slot.querySelector('.result-die');
       if (img) {
-        img.src = `dice${Math.min(index + 1, 5)}.png`;
+        img.src = `dice${(index % 5) + 1}.png`;
         img.style.transform = 'translate(-50%, 0) rotate(0deg)';
       }
     });
   }
 
   function randomizeDicePositions() {
-    // 5 fixed zones so dice don't overlap
-    const zones = [
-      { left: 18, bottom: 8, rotate: -12 },
-      { left: 34, bottom: 4, rotate: 9 },
-      { left: 50, bottom: 10, rotate: -6 },
-      { left: 66, bottom: 5, rotate: 11 },
-      { left: 82, bottom: 9, rotate: -10 }
+    const spots = [
+        { left: 20, bottom: 20 },
+        { left: 35, bottom: 10 },
+        { left: 50, bottom: 22 },
+        { left: 65, bottom: 12 },
+        { left: 80, bottom: 18 }
     ];
 
-    const shuffledZones = [...zones].sort(() => Math.random() - 0.5);
+    const shuffled = [...spots].sort(() => Math.random() - 0.5);
 
     dieSlots.forEach((slot, index) => {
-      const img = slot.querySelector('.result-die');
-      const zone = shuffledZones[index];
+        const img = slot.querySelector('.result-die');
+        const pos = shuffled[index];
 
-      const leftJitter = randomInt(-2, 2);
-      const bottomJitter = randomInt(-2, 2);
-      const rotateJitter = randomInt(-5, 5);
+        // small randomness
+        const x = randomInt(-3, 3);
+        const y = randomInt(-3, 3);
+        const rot = randomInt(-15, 15);
 
-      slot.style.left = `${zone.left + leftJitter}%`;
-      slot.style.bottom = `${zone.bottom + bottomJitter}%`;
+        slot.style.left = `${pos.left + x}%`;
+        slot.style.bottom = `${pos.bottom + y}%`;
 
-      if (img) {
-        img.style.transform = `translate(-50%, 0) rotate(${zone.rotate + rotateJitter}deg)`;
-      }
+        if (img) {
+        img.style.transform = `translate(-50%, 0) rotate(${rot}deg)`;
+        }
     });
   }
 
@@ -129,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   rollBtn.addEventListener('click', rollDice);
-  dieTrigger.addEventListener('click', rollDice);
   resetBtn.addEventListener('click', resetGame);
+  dieTrigger.addEventListener('click', rollDice);
 
   resetGame();
 });
