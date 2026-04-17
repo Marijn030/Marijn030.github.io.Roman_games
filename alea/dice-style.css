@@ -1,0 +1,257 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --panel: rgba(40, 28, 18, 0.82);
+  --panel-border: rgba(255, 233, 186, 0.18);
+  --gold-1: #f3d598;
+  --gold-2: #caa25c;
+  --text-soft: #e8dac0;
+  --text-main: #fff5dd;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-main);
+  background-image: url("tile.png");
+  background-repeat: repeat;
+  background-size: 220px;
+  position: relative;
+}
+
+.page-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 35%),
+    rgba(18, 14, 10, 0.62);
+  pointer-events: none;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 20px 40px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #fff0c8;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.topbar {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.subtitle {
+  margin: 10px auto 0;
+  color: var(--text-soft);
+  font-size: 1rem;
+  max-width: 720px;
+}
+
+.game-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.info-panel,
+.board-panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+}
+
+.info-panel {
+  padding: 20px;
+}
+
+.status-card,
+.tip-card {
+  background: rgba(255, 248, 234, 0.08);
+  border: 1px solid rgba(255, 233, 186, 0.12);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.status-card.small {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d8c7a5;
+  margin-bottom: 8px;
+}
+
+.value,
+.results {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.results.muted {
+  color: #d7c7aa;
+}
+
+.button-stack {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.action-btn {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
+  color: #2d1b0c;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
+.action-btn.secondary {
+  background: linear-gradient(180deg, #f0eadb, #cbbba0);
+}
+
+.action-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 0.96;
+}
+
+.action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.tip-card p {
+  margin: 10px 0 0;
+  color: #ead9bb;
+  line-height: 1.5;
+}
+
+.tip-card code {
+  color: #fff5dd;
+  background: rgba(0,0,0,0.22);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.board-panel {
+  padding: 20px;
+}
+
+.scene-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    linear-gradient(to bottom, rgba(82, 60, 40, 0.25), rgba(40, 28, 18, 0.08));
+}
+
+.table-bg,
+.tower {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.table-bg {
+  z-index: 0;
+}
+
+#scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+#scene canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.tower {
+  z-index: 3;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+.tower-hole {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tower-hole.top {
+  width: 17%;
+  height: 18%;
+  left: 41.5%;
+  top: 11%;
+}
+
+.tower-hole.bottom {
+  width: 18%;
+  height: 10%;
+  left: 41%;
+  bottom: 14%;
+}
+
+@media (max-width: 980px) {
+  .game-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 20px 14px 28px;
+  }
+
+  .info-panel,
+  .board-panel {
+    border-radius: 18px;
+  }
+}
