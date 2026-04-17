@@ -53,12 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function randomizeDicePositions() {
+    // Scattered landing spots under the tower.
+    // Kept away from the far right edge so dice stay on the table.
     const spots = [
-        { left: 20, bottom: 20 },
-        { left: 35, bottom: 10 },
-        { left: 50, bottom: 22 },
-        { left: 65, bottom: 12 },
-        { left: 80, bottom: 18 }
+        { left: 19, bottom: 20 },
+        { left: 33, bottom: 11 },
+        { left: 49, bottom: 23 },
+        { left: 63, bottom: 13 },
+        { left: 75, bottom: 19 }
     ];
 
     const shuffled = [...spots].sort(() => Math.random() - 0.5);
@@ -67,10 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = slot.querySelector('.result-die');
         const pos = shuffled[index];
 
-        // small randomness
-        const x = randomInt(-3, 3);
-        const y = randomInt(-3, 3);
-        const rot = randomInt(-15, 15);
+        const x = randomInt(-2, 2);
+        const y = randomInt(-2, 2);
+        const rot = randomInt(-16, 16);
 
         slot.style.left = `${pos.left + x}%`;
         slot.style.bottom = `${pos.bottom + y}%`;
@@ -134,3 +135,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   resetGame();
 });
+
+function showResults(values) {
+  randomizeDicePositions();
+
+  dieSlots.forEach((slot, index) => {
+    const img = slot.querySelector('.result-die');
+
+    if (img) {
+      img.src = `dice${values[index]}.png`;
+    }
+
+    slot.classList.remove('visible');
+    slot.style.opacity = '0';
+    slot.style.transform = 'translate(-50%, -90px) scale(0.72)';
+
+    setTimeout(() => {
+      slot.classList.add('visible');
+      slot.style.opacity = '1';
+      slot.style.transform = 'translate(-50%, 0) scale(1)';
+    }, 110 * index);
+  });
+
+  updateSummary(values);
+}
