@@ -414,3 +414,7 @@ body {
 .back-link:hover {
   text-decoration: underline;
 }
+
+.reset-btn + .reset-btn {
+  margin-top: 10px;
+}
