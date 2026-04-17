@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function hideResults() {
     dieSlots.forEach((slot) => {
-      slot.classList.remove('visible');
+      slot.classList.remove('visible', 'launching');
+      slot.style.opacity = '0';
     });
   }
 
@@ -53,36 +54,44 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function randomizeDicePositions() {
-    // Scattered landing spots under the tower.
-    // Kept away from the far right edge so dice stay on the table.
-    const spots = [
-        { left: 19, bottom: 20 },
-        { left: 33, bottom: 11 },
-        { left: 49, bottom: 23 },
-        { left: 63, bottom: 13 },
-        { left: 75, bottom: 19 }
-    ];
+    const isPhone = window.innerWidth <= 640;
+
+    const spots = isPhone
+      ? [
+          { left: 20, bottom: 24 },
+          { left: 38, bottom: 10 },
+          { left: 52, bottom: 27 },
+          { left: 67, bottom: 13 },
+          { left: 82, bottom: 23 }
+        ]
+      : [
+          { left: 19, bottom: 20 },
+          { left: 33, bottom: 11 },
+          { left: 49, bottom: 23 },
+          { left: 63, bottom: 13 },
+          { left: 75, bottom: 19 }
+        ];
 
     const shuffled = [...spots].sort(() => Math.random() - 0.5);
 
     dieSlots.forEach((slot, index) => {
-        const img = slot.querySelector('.result-die');
-        const pos = shuffled[index];
+      const img = slot.querySelector('.result-die');
+      const pos = shuffled[index];
 
-        const x = randomInt(-2, 2);
-        const y = randomInt(-2, 2);
-        const rot = randomInt(-16, 16);
+      const x = randomInt(-2, 2);
+      const y = randomInt(-2, 2);
+      const rot = randomInt(-16, 16);
 
-        slot.style.left = `${pos.left + x}%`;
-        slot.style.bottom = `${pos.bottom + y}%`;
+      slot.style.left = `${pos.left + x}%`;
+      slot.style.bottom = `${pos.bottom + y}%`;
 
-        if (img) {
+      if (img) {
         img.style.transform = `translate(-50%, 0) rotate(${rot}deg)`;
-        }
+      }
     });
   }
 
-  function showResults(values) {
+  function launchDiceFromTower(values) {
     randomizeDicePositions();
 
     dieSlots.forEach((slot, index) => {
@@ -92,9 +101,22 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = `dice${values[index]}.png`;
       }
 
+      slot.classList.remove('visible', 'launching');
+
+      // start near tower exit
+      slot.style.opacity = '0';
+      slot.style.transform = 'translate(-50%, -180px) scale(0.45)';
+
       setTimeout(() => {
+        slot.classList.add('launching');
+      }, 60 * index);
+
+      setTimeout(() => {
+        slot.classList.remove('launching');
         slot.classList.add('visible');
-      }, index * 90);
+        slot.style.opacity = '1';
+        slot.style.transform = 'translate(-50%, 0) scale(1)';
+      }, 220 + (90 * index));
     });
 
     updateSummary(values);
@@ -114,9 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
       tableScene.classList.remove('rolling');
-      showResults(values);
+      launchDiceFromTower(values);
       rolling = false;
-    }, 900);
+    }, 950);
   }
 
   function resetGame() {
@@ -135,27 +157,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   resetGame();
 });
-
-function showResults(values) {
-  randomizeDicePositions();
-
-  dieSlots.forEach((slot, index) => {
-    const img = slot.querySelector('.result-die');
-
-    if (img) {
-      img.src = `dice${values[index]}.png`;
-    }
-
-    slot.classList.remove('visible');
-    slot.style.opacity = '0';
-    slot.style.transform = 'translate(-50%, -90px) scale(0.72)';
-
-    setTimeout(() => {
-      slot.classList.add('visible');
-      slot.style.opacity = '1';
-      slot.style.transform = 'translate(-50%, 0) scale(1)';
-    }, 110 * index);
-  });
-
-  updateSummary(values);
-}

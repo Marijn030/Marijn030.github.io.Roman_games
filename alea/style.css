@@ -239,10 +239,20 @@ model-viewer {
   width: 14%;
   aspect-ratio: 1 / 1;
   opacity: 0;
-  transform: translate(-50%, -90px) scale(0.72);
+  transform: translate(-50%, -180px) scale(0.45);
   transition:
-    opacity 0.28s ease,
-    transform 0.42s cubic-bezier(.2,.8,.2,1);
+    opacity 0.18s ease,
+    transform 0.55s cubic-bezier(.18,.85,.22,1.15);
+}
+
+.die-slot.visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.die-slot.launching {
+  opacity: 1;
+  transform: translate(-50%, -40px) scale(0.82);
 }
 
 .die-slot.visible {
@@ -337,18 +347,18 @@ model-viewer {
   }
 
   .dice-tray {
-    width: 82%;
-    top: 58%;
-    height: 30%;
+    width: 86%;
+    top: 56%;
+    height: 34%;
   }
 
   .die-slot {
-    width: 24%;
+    width: 18%;
   }
 
   .result-die {
-    width: 90%;
-    height: 90%;
+    width: 100%;
+    height: 100%;
   }
 }
 
